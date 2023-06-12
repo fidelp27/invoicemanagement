@@ -1,0 +1,30 @@
+.menu-btn {
+    .menu-icon {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+  
+      svg {
+        width: 20px;
+        height: 20px;
+        color: #333;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .menu-icon {
+        width: 30px;
+        height: 30px;
+  
+        svg {
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+  }
+  
