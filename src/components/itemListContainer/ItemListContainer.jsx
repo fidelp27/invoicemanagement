@@ -3,19 +3,15 @@ import ItemList from './ItemList';
 import useGetItems from '../../hooks/useGetItems';
 import FilterItems from './FilterItems';
 
-const ItemListContainer = () => {
+const ItemListContainer = ({ productList, handleAddToProductList }) => {
   const items = useGetItems();
   const [filteredItems, setFilteredItems] = useState(items);
-  const [invoiceItems, setInvoiceItems] = useState([]);
   const handleFilter = (filterText) => {
     const filtered = items.filter((item) =>
       item.title.toLowerCase().includes(filterText.toLowerCase())
     );
 
     setFilteredItems(filtered);
-  };
-  const handleAddToInvoice = (product) => {
-    setInvoiceItems([...invoiceItems, product]);
   };
 
   return (
@@ -24,10 +20,13 @@ const ItemListContainer = () => {
       {filteredItems.length > 0 ? (
         <ItemList
           items={filteredItems}
-          handleAddToInvoice={handleAddToInvoice}
+          handleAddToProductList={handleAddToProductList}
         />
       ) : (
-        <ItemList items={items} handleAddToInvoice={handleAddToInvoice} />
+        <ItemList
+          items={items}
+          handleAddToProductList={handleAddToProductList}
+        />
       )}
     </div>
   );

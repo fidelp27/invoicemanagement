@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Item = ({ product, handleAddToInvoice }) => {
+const Item = ({ product, handleAddToProductList }) => {
   const { id, title, description, thumbnail, price } = product;
 
   return (
@@ -14,7 +14,7 @@ const Item = ({ product, handleAddToInvoice }) => {
         <p className="price">Price: ${price}</p>
       </div>
       <div className="item-card-actions">
-        <button onClick={() => handleAddToInvoice(product)}>
+        <button onClick={() => handleAddToProductList(product)}>
           Add to Invoice
         </button>
       </div>
