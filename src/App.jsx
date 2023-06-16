@@ -19,6 +19,13 @@ const App = () => {
     return savedInvoiceList ? JSON.parse(savedInvoiceList) : [];
   });
   const [lastInvoiceNumber, setLastInvoiceNumber] = useState(0);
+
+  const generateInvoiceNumber = () => {
+    const nextInvoiceNumber = lastInvoiceNumber + 1;
+    setLastInvoiceNumber(nextInvoiceNumber);
+    localStorage.setItem('lastInvoiceNumber', nextInvoiceNumber.toString());
+    return nextInvoiceNumber;
+  };
   //Inicia el state desde el localStorage si existe, sino lo inicia con un objeto con valores por defecto
   const [invoiceData, setInvoiceData] = useState(() => {
     const savedInvoice = localStorage.getItem('invoice');
@@ -36,12 +43,6 @@ const App = () => {
 
   // Funciones auxiliares
   //Obtener un número de factura único al recargar la app o al crear una nueva factura
-  const generateInvoiceNumber = () => {
-    const nextInvoiceNumber = lastInvoiceNumber + 1;
-    setLastInvoiceNumber(nextInvoiceNumber);
-    localStorage.setItem('lastInvoiceNumber', nextInvoiceNumber.toString());
-    return nextInvoiceNumber;
-  };
 
   //Borrar facturas de UI y localStorage
   const handleDeleteInvoice = (invoiceNumber) => {
