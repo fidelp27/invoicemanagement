@@ -1,48 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import ItemListContainer from './components/itemListContainer/itemListContainer';
-import Menu from './components/menu/Menu';
-import MenuAside from './components/aside/MenuAside';
 import { Routes, Route } from 'react-router-dom';
+
 import FormInvoice from './components/aside/FormInvoice';
 import InvoiceList from './components/aside/InvoicesList';
+import ItemListContainer from './components/items/itemListContainer';
+import Menu from './components/menu/Menu';
+import MenuAside from './components/aside/MenuAside';
+import { Toast, handleToast } from './components/utils/toast';
 import { toast } from 'react-toastify';
-import Toast from './components/utils/toast';
-import { useNavigate } from 'react-router-dom';
+
 const App = () => {
+  // Estados
   const [isAsideOpen, setAsideOpen] = useState(false);
   const [productList, setProductList] = useState([]);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  //Inicia el state desde el localStorage si existe, sino lo inicia vacío
   const [invoiceList, setInvoiceList] = useState(() => {
     const savedInvoiceList = localStorage.getItem('invoiceList');
     return savedInvoiceList ? JSON.parse(savedInvoiceList) : [];
   });
   const [lastInvoiceNumber, setLastInvoiceNumber] = useState(0);
-  const navigate = useNavigate();
-  const handleToast = (type, text) => {
-    toast[type](text, {
-      position: 'top-center',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'dark',
-    });
-  };
-
-  const generateInvoiceNumber = () => {
-    const nextInvoiceNumber = lastInvoiceNumber + 1;
-    setLastInvoiceNumber(nextInvoiceNumber);
-    localStorage.setItem('lastInvoiceNumber', nextInvoiceNumber.toString());
-    return nextInvoiceNumber;
-  };
-  const handleEditInvoice = (invoiceNumber) => {
-    const invoiceToEdit = invoiceList.find(
-      (invoice) => invoice.invoiceNumber === invoiceNumber
-    );
-    setSelectedInvoice(invoiceToEdit);
-  };
+  //Inicia el state desde el localStorage si existe, sino lo inicia con un objeto con valores por defecto
   const [invoiceData, setInvoiceData] = useState(() => {
     const savedInvoice = localStorage.getItem('invoice');
     if (savedInvoice) {
@@ -57,6 +34,16 @@ const App = () => {
     }
   });
 
+  // Funciones auxiliares
+  //Obtener un número de factura único al recargar la app o al crear una nueva factura
+  const generateInvoiceNumber = () => {
+    const nextInvoiceNumber = lastInvoiceNumber + 1;
+    setLastInvoiceNumber(nextInvoiceNumber);
+    localStorage.setItem('lastInvoiceNumber', nextInvoiceNumber.toString());
+    return nextInvoiceNumber;
+  };
+
+  //Borrar facturas de UI y localStorage
   const handleDeleteInvoice = (invoiceNumber) => {
     const updatedInvoiceList = invoiceList.filter(
       (invoice) => invoice.invoiceNumber !== invoiceNumber
@@ -65,38 +52,33 @@ const App = () => {
     localStorage.setItem('invoiceList', JSON.stringify(updatedInvoiceList));
   };
 
+  //Show-Hide del aside
   const handleShowAside = () => {
     setAsideOpen(!isAsideOpen);
   };
 
+  //Agregar producto al listado
   const handleAddToProductList = (product) => {
-    const existingProductIndex = invoiceData.items.findIndex(
+    const existingProduct = invoiceData.items.findIndex(
       (item) => item.id === product.id
     );
 
-    if (existingProductIndex !== -1) {
-      const updatedItems = [...invoiceData.items];
-      updatedItems[existingProductIndex].quantity += 1;
-      updatedItems[existingProductIndex].total =
-        updatedItems[existingProductIndex].quantity * product.price;
-
-      setInvoiceData((prevData) => ({
-        ...prevData,
-        items: updatedItems,
-      }));
+    if (existingProduct !== -1) {
+      toast.warn('This product is already in the invoice');
     } else {
       const newProduct = {
         ...product,
         quantity: 1,
         total: product.price,
       };
-
-      setInvoiceData((prevData) => ({
-        ...prevData,
-        items: [...prevData.items, newProduct],
-      }));
+      //copia del estado anterior y modifico items
+      setInvoiceData({
+        ...invoiceData,
+        items: [...invoiceData.items, newProduct],
+      });
     }
   };
+  // Cancelar la creación de una nueva factura y devuelvo el último número de factura vigente
   const handleCancel = () => {
     setInvoiceData({
       invoiceNumber: lastInvoiceNumber,
@@ -105,8 +87,10 @@ const App = () => {
       items: [],
     });
   };
+  // OnSubmit del formulario de nueva factura
   const handleSubmit = (e) => {
     e.preventDefault();
+    //Validaciones de formulario
     if (invoiceData.customerName === '') {
       handleToast('warn', 'The name of the customer is required');
       return;
@@ -116,25 +100,14 @@ const App = () => {
       return;
     }
 
-    if (selectedInvoice) {
-      // Editar la factura existente
-      setInvoiceList((prevList) =>
-        prevList.map((invoice) =>
-          invoice.invoiceNumber === selectedInvoice.invoiceNumber
-            ? invoiceData
-            : invoice
-        )
-      );
-      handleToast('success', 'Invoice updated successfully');
-    } else {
-      // Crear una nueva factura
-      setInvoiceList((prevList) => [...prevList, invoiceData]);
-      handleToast('success', 'Invoice created successfully');
-    }
+    // Crear una nueva factura
+    setInvoiceList([...invoiceList, invoiceData]);
+    handleToast('success', 'Invoice created successfully');
+
+    //almacenar la factura en el localStorage
+    localStorage.removeItem('invoice');
 
     // Restablecer el estado y los campos del formulario
-    setSelectedInvoice(null);
-    localStorage.removeItem('invoice');
     setInvoiceData({
       invoiceNumber: generateInvoiceNumber(),
       customerName: '',
@@ -143,6 +116,8 @@ const App = () => {
     });
   };
 
+  // Efectos
+  //Al cargar la app, si hay productos en el localStorage los cargo en el estado
   useEffect(() => {
     const savedProductList = localStorage.getItem('productList');
     if (savedProductList) {
@@ -150,18 +125,23 @@ const App = () => {
     }
   }, []);
 
+  //Se guardan los datos en localStorage cada vez que modifico datos de la factura
   useEffect(() => {
     localStorage.setItem('invoice', JSON.stringify(invoiceData));
   }, [invoiceData]);
 
+  //Se guardan los productos en localStorage cada vez que modifico el listado de facturas
   useEffect(() => {
     localStorage.setItem('invoiceList', JSON.stringify(invoiceList));
   }, [invoiceList]);
 
+  //
   useEffect(() => {
+    //chequeo que hayan datos almacenados en el localStorage
     const savedInvoiceList = localStorage.getItem('invoiceList');
     const savedLastInvoiceNumber = localStorage.getItem('lastInvoiceNumber');
 
+    //si hay datos de facturas guardadas actualizo el listado de facturas y el último número de factura
     if (savedInvoiceList) {
       setInvoiceList(JSON.parse(savedInvoiceList));
 
@@ -171,12 +151,13 @@ const App = () => {
         setLastInvoiceNumber(lastInvoice.invoiceNumber);
       }
     }
-
+    //si hay datos del último número de factura guardado actualizo el estado
     if (savedLastInvoiceNumber) {
       setLastInvoiceNumber(Number(savedLastInvoiceNumber));
     }
   }, []);
 
+  // Renderizado
   return (
     <>
       <Menu handleShowAside={handleShowAside} isAsideOpen={isAsideOpen} />
@@ -197,7 +178,7 @@ const App = () => {
               handleShowAside={handleShowAside}
               isAsideOpen={isAsideOpen}
               productList={productList}
-              invoiceData={selectedInvoice || invoiceData}
+              invoiceData={invoiceData}
               setInvoiceData={setInvoiceData}
               handleSubmit={handleSubmit}
               handleCancel={handleCancel}
@@ -212,7 +193,6 @@ const App = () => {
               isAsideOpen={isAsideOpen}
               invoiceList={invoiceList}
               handleDeleteInvoice={handleDeleteInvoice}
-              handleEditInvoice={handleEditInvoice}
             />
           }
         />

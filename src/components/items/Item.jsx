@@ -1,7 +1,8 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 const Item = ({ product, handleAddToProductList }) => {
-  const { id, title, description, thumbnail, price } = product;
+  const { title, description, thumbnail, price } = product;
 
   return (
     <div className="item-card">

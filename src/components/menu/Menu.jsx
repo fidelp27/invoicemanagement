@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { FaBars } from 'react-icons/fa';
 import { Link } from 'react-router-dom';

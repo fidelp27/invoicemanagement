@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import AsideContainer from './AsideContainer';
 import { Link } from 'react-router-dom';
 const MenuAside = ({ handleShowAside, isAsideOpen }) => {

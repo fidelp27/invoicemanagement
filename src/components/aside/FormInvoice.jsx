@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import AsideContainer from './AsideContainer';
 
@@ -9,6 +10,7 @@ const FormInvoice = ({
   handleSubmit,
   handleCancel,
 }) => {
+  //Modificar cantidad de items y precio total
   const handleQuantityChange = (itemId, quantity) => {
     const updatedItems = invoiceData.items.map((item) => {
       if (item.id === itemId) {
@@ -21,42 +23,43 @@ const FormInvoice = ({
       return item;
     });
 
-    setInvoiceData((prevData) => ({
-      ...prevData,
-      items: updatedItems,
-    }));
+    setInvoiceData({ ...invoiceData, items: updatedItems });
   };
 
+  //Actualizar total al cambiar items
   useEffect(() => {
     const total = invoiceData.items.reduce((acc, item) => acc + item.total, 0);
-    setInvoiceData((prevData) => ({
-      ...prevData,
-      total: total,
-    }));
+    setInvoiceData({ ...invoiceData, total });
   }, [invoiceData.items]);
 
   return (
     <AsideContainer handleShowAside={handleShowAside} isAsideOpen={isAsideOpen}>
       <h1>Form Invoice</h1>
       <form onSubmit={handleSubmit}>
-        <label>
+        <label htmlFor="invoiceNumber">
           Invoice Number:
-          <input type="text" value={invoiceData.invoiceNumber} disabled />
+          <input
+            type="text"
+            value={invoiceData.invoiceNumber}
+            id="invoiceNumber"
+            disabled
+          />
         </label>
-        <label>
+        <label htmlFor="date">
           Date:
-          <input type="text" value={invoiceData.date} disabled />
+          <input type="text" id="date" value={invoiceData.date} disabled />
         </label>
-        <label>
+        <label htmlFor="customerName">
           Customer Name:
           <input
             type="text"
+            id="customerName"
             value={invoiceData.customerName}
             onChange={(e) =>
-              setInvoiceData((prevData) => ({
-                ...prevData,
+              setInvoiceData({
+                ...invoiceData,
                 customerName: e.target.value,
-              }))
+              })
             }
           />
         </label>

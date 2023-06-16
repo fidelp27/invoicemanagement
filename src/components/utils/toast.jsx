@@ -1,8 +1,8 @@
 import React from 'react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Toast = () => {
+export const Toast = () => {
   return (
     <>
       <ToastContainer
@@ -21,4 +21,15 @@ const Toast = () => {
   );
 };
 
-export default Toast;
+export const handleToast = (type, text) => {
+  toast[type](text, {
+    position: 'top-center',
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'dark',
+  });
+};

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import AsideContainer from './AsideContainer';
 import { FaTrash } from 'react-icons/fa';
@@ -7,6 +8,7 @@ export default function InvoiceList({
   invoiceList,
   handleDeleteInvoice,
 }) {
+  //Total de factura
   const calculateTotal = (items) => {
     return items.reduce((total, item) => total + item.total, 0);
   };
@@ -14,12 +16,12 @@ export default function InvoiceList({
   return (
     <AsideContainer handleShowAside={handleShowAside} isAsideOpen={isAsideOpen}>
       <h1>InvoiceList</h1>
-      {invoiceList.length > 0 ? (
-        <div className="invoice-list">
-          {invoiceList
+      <div className="invoice-list">
+        {invoiceList.length > 0 ? (
+          invoiceList
             .sort((a, b) => b.invoiceNumber - a.invoiceNumber)
             .map((invoice) => (
-              <div className="invoice-card" key={invoice.id}>
+              <div className="invoice-card" key={invoice.invoiceNumber}>
                 <div className="invoice-card-item">
                   <strong>Invoice Number:</strong> {invoice.invoiceNumber}
                 </div>
@@ -39,11 +41,11 @@ export default function InvoiceList({
                   <FaTrash />
                 </div>
               </div>
-            ))}
-        </div>
-      ) : (
-        <p>No invoices yet</p>
-      )}
+            ))
+        ) : (
+          <p className="empty-container">No invoices yet</p>
+        )}
+      </div>
     </AsideContainer>
   );
 }
