@@ -197,7 +197,17 @@ const App = () => {
             />
           }
         />
+        <Route
+          path="*"
+          element={
+            <ItemListContainer
+              productList={productList}
+              handleAddToProductList={handleAddToProductList}
+            />
+          }
+        />
       </Routes>
+
       <ItemListContainer
         productList={productList}
         handleAddToProductList={handleAddToProductList}
