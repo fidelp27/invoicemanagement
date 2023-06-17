@@ -162,6 +162,10 @@ const App = () => {
   return (
     <>
       <Menu handleShowAside={handleShowAside} isAsideOpen={isAsideOpen} />
+      <ItemListContainer
+        productList={productList}
+        handleAddToProductList={handleAddToProductList}
+      />
       <Routes>
         <Route
           path="/menu"
@@ -208,10 +212,6 @@ const App = () => {
         />
       </Routes>
 
-      <ItemListContainer
-        productList={productList}
-        handleAddToProductList={handleAddToProductList}
-      />
       <Toast />
     </>
   );
