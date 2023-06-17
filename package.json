@@ -1,5 +1,6 @@
 {
   "name": "invoicesystem",
+  "homepage": "https://fidelp27.github.io/invoicemanagement",
   "private": true,
   "version": "0.0.0",
   "type": "module",
