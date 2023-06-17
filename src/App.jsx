@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import FormInvoice from './components/aside/FormInvoice';
 import InvoiceList from './components/aside/InvoicesList';
@@ -162,9 +162,15 @@ const App = () => {
   return (
     <>
       <Menu handleShowAside={handleShowAside} isAsideOpen={isAsideOpen} />
-      <ItemListContainer
-        productList={productList}
-        handleAddToProductList={handleAddToProductList}
+
+      <Route
+        path="/"
+        element={
+          <ItemListContainer
+            productList={productList}
+            handleAddToProductList={handleAddToProductList}
+          />
+        }
       />
       <Routes>
         <Route
@@ -201,15 +207,7 @@ const App = () => {
             />
           }
         />
-        <Route
-          path="*"
-          element={
-            <ItemListContainer
-              productList={productList}
-              handleAddToProductList={handleAddToProductList}
-            />
-          }
-        />
+        <Route path="/*" element={<Navigate to="/" replace />} />
       </Routes>
 
       <Toast />
