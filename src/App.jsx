@@ -207,7 +207,6 @@ const App = () => {
             />
           }
         />
-        <Route path="/*" element={<Navigate to="/" replace />} />
       </Routes>
 
       <Toast />
